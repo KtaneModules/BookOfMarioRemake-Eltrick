@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Linq;
 using UnityEngine;
 using rnd = UnityEngine.Random;
 using KModkit;
@@ -20,18 +19,15 @@ public class BookOfMario : MonoBehaviour
 	public Sprite[] shrooms;
 	public Sprite[] genBtnSprites;
 	private int stage = 1;
-	int x = 0;
-	int y = 0;
-	int z = 0;
-	int t = 0;
+	int x, y, z, t;
 	private List<int> btnIndex = new List<int>();
 	private List<string> check = new List<string>();
+	private static int _moduleCount;
 
 	// Log stuff
 	static int moduleIdCounter = 1;
 	int moduleId;
 	private bool moduleSolved = false;
-
 
 	private static string[][] quotes = new string[13][]
 	{
@@ -47,11 +43,12 @@ public class BookOfMario : MonoBehaviour
 		new string[6] { "Mr. Krump", "Everyone...\nSyphillis, sign up!", "Dude, you're a crap!\nSmall details, right\nAnd you came, did you?", "Do not think it would\nbe better, like my\ndaughter, that little\npremature death...", "'Oh, do you say the\nstar of the glass,\nMr Krump?' BOOM!\nDirectly online.", "I call it the\nLIFE DETECTOR with\nLOVE PUMP." },
 		new string[6] { "Prince\nPeach", "That thing is sick", "In other words, I came!", "If you like me, I will do\nmy best to create\nproblems for you.", "For all of you, the world\nwill be facing a\nterrible darkness.", "Love... How can I\nexplain it? Love tells\nyou when you’re not\ndone yet." },
 		new string[4] { "Quiz\nThwomb", "HEY, women and\ninsects! Welcome, \neveryone,\nlet's go Super Quiz\nSuper 65 Quiz!", "Excellent headline\nopportunity!\nMMM HELLO HA HA!", "Bad is not right!\nDumbass!" },
-		new string[4] { "Yoshi Kid", "Whoa! Fuck?!?", "Whoa! Free cake in\nthe country!\nLet's be calm.", "Pigs can not be\non the road!" },
+		new string[3] { "Yoshi Kid", "Whoa! Free cake in\nthe country!\nLet's be calm.", "Pigs can not be\non the road!" }
 	};
 
 	void Awake()
 	{
+		_moduleCount = 0;
 		moduleId = moduleIdCounter++;
 		foreach(KMSelectable button in buttons)
 		{
@@ -63,10 +60,9 @@ public class BookOfMario : MonoBehaviour
 
 	void Start()
 	{
-		if(true)
-		{
+		_moduleCount++;
+		if(_moduleCount == 1)
 			Audio.PlaySoundAtTransform("BoM_Start", transform);
-		}
 		ActivateModule();
 	}
 
@@ -74,22 +70,7 @@ public class BookOfMario : MonoBehaviour
 	{
 		stageShroom.sprite = shrooms[stage - 1];
 		x = rnd.Range(0, 13);
-		if(x == 1 || x == 2 || x == 4 || x == 7 || x == 11 || x == 12)
-		{
-			y = rnd.Range(1, 4);
-		}
-		else if(x == 5 || x == 8)
-		{
-			y = rnd.Range(1, 5);
-		}
-		else if(x == 0 || x == 9 || x == 10)
-		{
-			y = rnd.Range(1, 6);
-		}
-		else
-		{
-			y = rnd.Range(1, 7);
-		}
+		y = rnd.Range(0, quotes[x].Length);
 		DisplayText.text = quotes[x][y];
 		Debug.LogFormat("[Book of Mario #{0}] The chosen quote for stage {1} is '{2}'", moduleId, stage, Regex.Replace(quotes[x][y], @"\n", " "));
 		int ansBtn = rnd.Range(0, 4);
@@ -100,13 +81,11 @@ public class BookOfMario : MonoBehaviour
 		check.Add(quotes[x][0]);
 		for(int i = 0; i < 3; i++)
 		{
-			z = rnd.Range(0, 13);
-			t = rnd.Range(0, 4);
-			while(btnIndex.Contains(t) || check.Contains(quotes[z][0]))
+			do
 			{
 				z = rnd.Range(0, 13);
 				t = rnd.Range(0, 4);
-			}
+			} while (btnIndex.Contains(t) || check.Contains(quotes[z][0]));
 			buttonSprites[t].sprite = genBtnSprites[z];
 			btnIndex.Add(t);
 			btnTxts[t].text = quotes[z][0];
@@ -119,7 +98,7 @@ public class BookOfMario : MonoBehaviour
 	void ButtonPress(KMSelectable button)
 	{
 		button.AddInteractionPunch();
-		Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, transform);
+		Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, button.transform);
 		if(moduleSolved)
 		{
 			return;
@@ -128,13 +107,9 @@ public class BookOfMario : MonoBehaviour
 		{
 			++stage;
 			if(stage == 4)
-			{
 				Solve();
-			}
 			else
-			{
 				ActivateModule();
-			}
 		}
 		else
 		{
@@ -161,7 +136,7 @@ public class BookOfMario : MonoBehaviour
    		private readonly string TwitchHelpMessage = "Use “!{0} tr br tl bl” to press the corresponding button.";
 	#pragma warning restore 414
 
-	IENumerator ProcessTwitchCommand(string command)
+	IEnumerator ProcessTwitchCommand(string command)
 	{
         command = command.ToLower().Trim();
 
@@ -175,7 +150,7 @@ public class BookOfMario : MonoBehaviour
                 break;
             case "tl":
             case "topleft":
-            case "topr":
+            case "topl":
             case "top left":
                 yield return null;
                 ButtonPress(buttons[0]);
@@ -195,7 +170,8 @@ public class BookOfMario : MonoBehaviour
                 ButtonPress(buttons[2]);
                 break;
             default:
-                yield break;
+                yield return "sendtochaterror Invalid command, you idiot. Try again.";
+				break;
         }
     }
 }

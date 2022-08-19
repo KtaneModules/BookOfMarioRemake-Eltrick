@@ -13,15 +13,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: BookOfMario
   title: Book of Mario
-  author: SamNic and Livio
+  author: Eltrick, Pruz
   description: 'Identify who the quote given came from and press the corresponding
     button.
 
 
-    Original module by Livio (livPlaysYT)
-
-
-    Temporary manual (until the manual on the repo is up) : https://github.com/ligio90/BookOfMario/blob/master/build/BookOfMario/Manual/Modules/Book%20of%20Mario.pdf'
-  version: 1.0
+    Original idea by Pruz'
+  version: 0.5.1
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 2f74f27e7e398ca45b4dba9c7106d099, type: 3}
