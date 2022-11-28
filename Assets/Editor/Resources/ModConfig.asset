@@ -19,6 +19,6 @@ MonoBehaviour:
 
 
     Original idea by Pruz'
-  version: 0.5.1
+  version: 1.5.2
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 2f74f27e7e398ca45b4dba9c7106d099, type: 3}

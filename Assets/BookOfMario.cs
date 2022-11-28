@@ -70,7 +70,7 @@ public class BookOfMario : MonoBehaviour
 	{
 		stageShroom.sprite = shrooms[stage - 1];
 		x = rnd.Range(0, 13);
-		y = rnd.Range(0, quotes[x].Length);
+		y = rnd.Range(1, quotes[x].Length);
 		DisplayText.text = quotes[x][y];
 		Debug.LogFormat("[Book of Mario #{0}] The chosen quote for stage {1} is '{2}'", moduleId, stage, Regex.Replace(quotes[x][y], @"\n", " "));
 		int ansBtn = rnd.Range(0, 4);
